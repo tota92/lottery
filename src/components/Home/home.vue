@@ -1,18 +1,33 @@
 <template>
     <div id="home">
-        <div id='leftBar'></div>
        <div id="topBar">
-             <el-button type="danger">退出</el-button>
+             <el-button type="danger" size='mini' @click="loginOut">注销</el-button>
        </div>
-
-        
-        <div id='rightBar'></div>
+       <div id='content'>
+            <div id='leftBar'>
+                <navbar></navbar>
+            </div>
+            <div id='rightBar'>
+                <router-view></router-view>
+            </div>
+       </div>
     </div>
 </template>
 
 <script>
+import navbar from './navbar'
     export default {
-        
+        components:{navbar},
+        methods:{
+            loginOut(){
+               var action = ()=>{
+               this.$router.push({name:'login'})
+                localStorage.clear()
+               }
+               this.operateConfirm('注销',action)
+            }
+        }
+      
     }
 </script>
 
@@ -22,13 +37,27 @@
      height:100%;
   }
   #topBar{
+      text-align: right;
+      padding: 10px 5px;
+      box-sizing: border-box;
       height:8%;
-      width:85%;
-      background: yellow;
+      line-height: 100%;
+      min-height: 40px;
+      width:100%;
+      background: rgb(196, 196, 196);
+  }
+  #content{
+      height:92%;
+      width:100%;
+      display: flex;
   }
   #leftBar{
       height:100%;
-      width:15%;
+      width:16%;
       background:rgb(43, 43, 43);
+  }
+  #rightBar{
+      height: 100%;
+      width: 85%;
   }
 </style>

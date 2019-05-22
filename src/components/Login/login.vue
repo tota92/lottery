@@ -1,6 +1,6 @@
 <template>
   <div id="login">
-    <img src="./bg2.jpg" id="bg">
+    <img src="./1.jpg" id="bg">
     <div id="denglu">
       <span style="font-size:50px;color:#979695;text-align:center">可米彩票</span>
       <el-form :model="userInfo" :rules="rules" status-icon ref="userInfo">
@@ -42,11 +42,13 @@ export default {
               console.log(resp.data);
               var token = resp.data.token;
               var success = resp.data.success;
+              var response =JSON.stringify(resp.data.response);
               if (success) {
                 localStorage.setItem("token", token);
+                localStorage.setItem("response", response);
                 var query = this.$route.query;
                 if (query.redirect) {
-                  this.$router.push({ path: query.redirect });
+                 this.$router.push({ path: query.redirect });
                 } else {
                   this.$router.push({ name: "home" });
                 }

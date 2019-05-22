@@ -7,6 +7,7 @@ import './apis/apis'
 import "reset-css"
 import 'element-ui/lib/theme-chalk/index.css';
 import elementUI from 'element-ui'
+import './mixins/mixins'
 Vue.use(elementUI)
 Vue.config.productionTip = false
 router.beforeEach((to,form,next)=>{
