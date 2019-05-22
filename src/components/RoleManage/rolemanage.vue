@@ -1,5 +1,6 @@
 <template>
   <div id="rolemanage">
+    <!-- 用户列表 -->
     <el-button size="mini" type="primary" @click="dialogFormVisible = true">新增角色</el-button>
     <el-table :data="rolelist" style="width: 99%">
       <el-table-column label="角色姓名" prop="roleName"></el-table-column>
@@ -12,6 +13,7 @@
       </el-table-column>
     </el-table>
 
+    <!-- 新增用户弹窗 -->
     <el-dialog title="新增角色" :visible.sync="dialogFormVisible" width="30%">
       <el-form label-width="80px" :model="addForm" ref="addForm" :rules="rules">
         <el-form-item label="角色名称" prop="roleName">
@@ -23,7 +25,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false" size="mini">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false" size="mini">确 定</el-button>
+        <el-button type="primary" @click="submitAdd" size="mini">确 定</el-button>
       </div>
       <el-tree
         :data="allrole"
@@ -33,7 +35,26 @@
         @check-change="handleCheckChange"
       ></el-tree>
     </el-dialog>
-    {{addForm.permissions}}
+
+    <!-- 编辑用户权限 -->
+    <el-dialog title="编辑用户权限" :visible.sync="dialogFormVisible2" width="30%">
+      <el-form label-width="80px" :model="updateRole">
+        <el-form-item label="角色名称">
+          <el-input v-model="updateRole.Name" disabled></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible2 = false" size="mini">取 消</el-button>
+        <el-button type="primary" size="mini">确 定</el-button>
+      </div>
+      <el-tree
+        :data="allrole"
+        :props="defaultProps"
+        show-checkbox
+        ref="tree"
+        @check-change="handleCheckChange"
+      ></el-tree>
+    </el-dialog>
   </div>
 </template>
 
@@ -44,11 +65,19 @@ export default {
     return {
       dialogTableVisible: false,
       dialogFormVisible: false,
+      dialogFormVisible2: false,
+
       addForm: {
         roleName: "",
-        roleDesc: ""
+        roleDesc: "",
+        permissions: []
       },
-      permissions: [],
+
+      updateRole: {
+        Name: "",
+        permissions: []
+      },
+
       rules: {
         roleName: [
           { required: true, message: "内容不能为空", trigger: "blur" }
@@ -62,31 +91,51 @@ export default {
     };
   },
   watch: {
-    permissions(newVue, oldVue) {
-       console.log('newVue',newVue)
-       console.log('oldVue',oldVue)
-    }
+    permissions(newVue, oldVue) {}
   },
   computed: {
     ...mapGetters(["rolelist", "allrole"])
   },
   methods: {
-    //编辑
+    //编辑用户的权限
     handleEdit(index, row) {
-      console.log(index);
+      this.dialogFormVisible2 = true;
+      this.updateRole.Name = row.roleName 
     },
-    //删除
+
+    //删除用户
     handleDelete(index, row) {
-      console.log(index);
-      console.log(row);
+      var action = () => {
+        this.post(this.$apis.deleteRole, row);
+      };
+      this.operateConfirm("删除用户", action).then(() => {
+        this.$store.dispatch("rolelist");
+      });
     },
 
+    //新用户设置权限
     handleCheckChange(data, checked, indeterminate) {
-      var arr = this.$refs.tree.getCheckedNodes();
+      var arr = this.$refs.tree.getCheckedNodes(false, true);
+      var arr2 = [];
+      for (var i = 0; i < arr.length; i++) {
+        arr2.push(arr[i]._id);
+      }
+      this.addForm.permissions = arr2;
+    },
 
-      this.permissions = arr;
-
+    //确认新用户提交
+    submitAdd() {
+      this.$refs["addForm"].validate(vaild => {
+        if (vaild) {
+          this.post(this.$apis.addNewRole, this.addForm).then(() => {
+            this.dialogFormVisible = false;
+            this.$store.dispatch("rolelist");
+          });
+        }
+      });
     }
+
+
   },
   mounted() {
     this.$store.dispatch("rolelist");

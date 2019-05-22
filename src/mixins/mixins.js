@@ -9,7 +9,8 @@ Vue.mixin({
               this.$message({
                   type:resp.data.success?'success':'danger',
                   message:resp.data.message
-              })
+                })
+                return 1
           })
         },
         operateConfirm(message, action) {
