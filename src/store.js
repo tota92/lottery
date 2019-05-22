@@ -15,18 +15,32 @@ const loadAction =(commit,payload,mutationName)=>{
 export default new Vuex.Store({
   state: {
     rolelist:[],
-    allrole:[]
+    allrole:[],
+    allUsers:[],
   },
   getters:{
+    allPrentRole(state){
+      var arr = state.allrole
+      var arr2 =[]
+      for(var i = 0;i<arr.length;i++){
+        if(arr[i].parentid === 0){
+          arr2.push(arr[i]._id)
+        }
+        
+      }
+      console.log(arr2)
+      return arr2
+    },
     rolelist(state){
       return state.rolelist
     },
     allrole(state){
+      console.log(state.allrole)
       var s = [...state.allrole]
-      var parentArr =s.filter((item,index)=>{
+      var parentArr =s.filter((item)=>{
         return item.parentid === 0
       })
-      var childArr= s.filter((item,index)=>{
+      var childArr= s.filter((item)=>{
         return item.parentid !== 0
       })
       for(var i=0;i<parentArr.length;i++){
@@ -38,25 +52,34 @@ export default new Vuex.Store({
           }
       }
       return parentArr
+    },
+    allUsers(state){
+      return state.allUsers
     }
-
   },
   mutations: {
-     ROLELIST(state,payload){
+     ROLELIST(state,payload){  //获取所有角色
        state.rolelist = payload.allRoles
      },
-     ALLROLE(state,payload){
+     ALLROLE(state,payload){ //获取所有权限
        state.allrole = payload.allPermission
      },
+     ALLUSERS(state,payload){
+        state.allUsers = payload.allUsers
+    }
   },
   actions: {
       rolelist({commit},payload={}){
         payload.apis = apis.findAllRoles
         loadAction(commit,payload,'ROLELIST')
       },   
-      allrole({commit},payload={}){
+      allrole({commit},payload={}){ //
         payload.apis = apis.showAllPermission 
         loadAction(commit,payload,'ALLROLE')
+      },   
+      allUsers({commit},payload={}){
+        payload.apis = apis.findAllUsers 
+        loadAction(commit,payload,'ALLUSERS')
       },   
   }
 })

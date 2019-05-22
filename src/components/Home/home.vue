@@ -13,7 +13,6 @@
        </div>
     </div>
 </template>
-
 <script>
 import navbar from './navbar'
     export default {
@@ -44,7 +43,7 @@ import navbar from './navbar'
       line-height: 100%;
       min-height: 40px;
       width:100%;
-      background: rgb(196, 196, 196);
+      background: rgb(111, 207, 219);
   }
   #content{
       height:92%;
