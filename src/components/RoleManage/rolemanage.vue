@@ -1,20 +1,22 @@
 <template>
   <div id="rolemanage">
     <!-- 用户列表 -->
-    <el-button size="mini" type="primary" @click="dialogFormVisible = true">新增角色</el-button>
-    <el-table :data="rolelist" style="width: 99%">
-      <el-table-column label="角色姓名" prop="roleName"></el-table-column>
-      <el-table-column label="角色描述" prop="roleDesc"></el-table-column>
-      <el-table-column label="操作" align="center">
+    <div id="add">
+      <el-button size="mini" type="primary" @click="dialogFormVisible = true">新增角色</el-button>
+    </div>
+    <el-table :data="rolelist" style="width: 99%" border>
+      <el-table-column label="角色姓名" prop="roleName" align="center" width="200"></el-table-column>
+      <el-table-column label="角色描述" prop="roleDesc" align="center"></el-table-column>
+      <el-table-column label="操作" align="center" width="300">
         <template slot-scope="scope">
-          <el-button size="mini" @click="handleEdit(scope, scope.row)">编辑角色</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除角色</el-button>
+          <el-button size="mini" @click="handleEdit(scope, scope.row)">编辑</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <!-- 新增角色弹窗 -->
-    <el-dialog title="新增角色" :visible.sync="dialogFormVisible" width="30%">
+    <el-dialog title="新增角色" :visible.sync="dialogFormVisible" width="30%" :before-close="cancel">
       <el-form label-width="80px" :model="addForm" ref="addForm" :rules="rules">
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="addForm.roleName"></el-input>
@@ -38,15 +40,21 @@
     </el-dialog>
 
     <!-- 编辑角色权限 -->
-    <el-dialog title="编辑用户权限" :visible.sync="dialogFormVisible2" width="30%" @opened="open">
+    <el-dialog
+      title="编辑用户权限"
+      :visible.sync="dialogFormVisible2"
+      width="30%"
+      @opened="open"
+      :before-close="cancel2"
+    >
       <el-form label-width="80px" :model="updateRole">
         <el-form-item label="角色名称">
           <el-input v-model="updateRole.Name" disabled></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible2 = false" size="mini">取 消</el-button>
-        <el-button type="primary" size="mini"  @click="update">更 新</el-button>
+        <el-button @click="cancel2" size="mini">取 消</el-button>
+        <el-button type="primary" size="mini" @click="update">更 新</el-button>
       </div>
       <el-tree
         :data="allrole"
@@ -72,13 +80,13 @@ export default {
       addForm: {
         roleName: "",
         roleDesc: "",
-        permissions:[]
+        permissions: []
       },
 
       updateRole: {
         Name: "",
-        id:"",
-        permissions:[]
+        id: "",
+        permissions: []
       },
 
       rules: {
@@ -97,7 +105,6 @@ export default {
     ...mapGetters(["rolelist", "allrole"])
   },
   methods: {
-   
     open() {
       // var p = [...this.allPrentRole]
       // var c = [...this.arr]
@@ -106,9 +113,9 @@ export default {
       // this.$refs.tree.setCheckedKeys([...a])
       this.$refs.tree.setCheckedKeys([...this.arr]);
     },
-      //编辑用户的权限
+    //编辑用户的权限
     handleEdit(index, row) {
-      console.log(row)
+      console.log(row);
       this.arr = row.permissions;
       this.dialogFormVisible2 = true;
       this.updateRole.Name = row.roleName;
@@ -134,7 +141,7 @@ export default {
       }
       this.addForm.permissions = arr2;
     },
- 
+
     handleCheckChange2(data, checked, indeterminate) {
       var arr = this.$refs.tree.getCheckedNodes(false, true);
       var arr2 = [];
@@ -160,22 +167,32 @@ export default {
     },
 
     //更新角色权限
-    update(){
-       this.post(this.$apis.updateRoleInfo,this.updateRole).then(()=>{
-          this.$store.dispatch("rolelist");
-          this.dialogFormVisible2 = false;
-       })
-    }, 
+    update() {
+      this.post(this.$apis.updateRoleInfo, this.updateRole).then(() => {
+        this.$store.dispatch("rolelist");
+        this.dialogFormVisible2 = false;
+      });
+    },
     //取消新增角色
     cancel() {
-      this.dialogFormVisible = false;
-      this.addForm.roleName = "";
-      this.addForm.roleDesc = "";
-      this.$refs.tree.setCheckedKeys([]);
+      var action = () => {
+        this.dialogFormVisible = false;
+        this.addForm.roleName = "";
+        this.addForm.roleDesc = "";
+        this.$refs.tree.setCheckedKeys([]);
+      };
+      this.operateConfirm("退出", action);
+    },
+    //取消编辑角色
+    cancel2() {
+      var action = () => {
+        this.dialogFormVisible2 = false;
+      };
+      this.operateConfirm("退出", action);
     }
   },
   mounted() {
-    console.log(this.allrole)
+    console.log(this.allrole);
     this.$store.dispatch("rolelist");
     this.$store.dispatch("allrole");
   }
@@ -186,7 +203,10 @@ export default {
 #rolemanage {
   height: 100%;
   width: 100%;
-  padding: 10px 30px;
+  padding: 20px 30px;
   box-sizing: border-box;
+}
+#add {
+  margin-bottom: 10px;
 }
 </style>
