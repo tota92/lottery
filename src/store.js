@@ -19,6 +19,7 @@ export default new Vuex.Store({
     rolelist: [], //获取所有角色
     allrole: [], //获取所有权限
     allUsers: [], //获取所有账号
+    allGames: [], //获取所有彩票
   },
   getters: {
     allPrentRole(state) {
@@ -35,6 +36,7 @@ export default new Vuex.Store({
     rolelist(state) {
       return state.rolelist
     },
+
     //所有权限
     allrole(state) {
       var s = [...state.allrole]
@@ -54,6 +56,7 @@ export default new Vuex.Store({
       }
       return parentArr
     },
+
     //获取所有账号
     allUsers(state) {
       function f(obj, arr) {
@@ -68,12 +71,17 @@ export default new Vuex.Store({
           }
         }
       }
-      var users =[...state.allUsers] 
+      var users = [...state.allUsers]
       var role = state.rolelist
       for (var j = 0; j < users.length; j++) {
         f(users[j], role)
       }
       return users
+    },
+
+    //获取所有彩种
+    allGames(state){
+      return state.allGames
     }
   },
   mutations: {
@@ -85,6 +93,9 @@ export default new Vuex.Store({
     },
     ALLUSERS(state, payload) {
       state.allUsers = payload.allUsers
+    },
+    ALLGAMES(state,payload){
+      state.allGames = payload.data[0]
     }
   },
   actions: {
@@ -106,5 +117,9 @@ export default new Vuex.Store({
       payload.apis = apis.findAllUsers
       loadAction(commit, payload, 'ALLUSERS')
     },
+    allGames({commit}, payload={}) {
+      payload.apis = apis.findAllGames
+      loadAction(commit, payload, 'ALLGAMES')
+    }
   }
 })

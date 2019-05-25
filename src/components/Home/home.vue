@@ -43,7 +43,7 @@ import navbar from './navbar'
       line-height: 100%;
       min-height: 40px;
       width:100%;
-      background: rgb(111, 207, 219);
+      background:#F2F6FC;
   }
   #content{
       height:92%;
@@ -52,8 +52,8 @@ import navbar from './navbar'
   }
   #leftBar{
       height:100%;
-      width:16%;
-      background:rgb(43, 43, 43);
+      width:16.5%;
+      background:#3e454b;
   }
   #rightBar{
       height: 100%;

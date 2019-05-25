@@ -7,9 +7,11 @@
         class="el-menu-vertical-demo"
         @open="handleOpen"
         @close="handleClose"
-        background-color="rgb(43, 43, 43)"
+         background-color="#3e454b"
         text-color="#fff"
         active-text-color="#ffd04b"
+        width='100%'
+        height='100%'
       >
         <el-submenu :index="(index+1)+''" v-for="(item,index) in  parmentList" :key="index" >
           <template slot="title">
@@ -17,7 +19,6 @@
                 <i class="el-icon-location"></i>
                 <span >{{item.permissionDesc}}</span>
             </div>
-          
           </template>
           <el-menu-item-group >
             <el-menu-item :index="'1-'+(indx+1)" v-for="(itm,indx) in child" :key='indx+"u"'

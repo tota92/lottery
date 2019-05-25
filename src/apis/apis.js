@@ -13,7 +13,11 @@ var apis = {
     findAllUsers: '/system/user/findAllUsers', //获取所有的用户
     addNewUser: '/system/user/addNewUser', //新增用户
     deleteUser: '/system/user/deleteUser', //删除用户
-    updateUserInfo: '/system/user/updateUserInfo' //更新用户
+    updateUserInfo: '/system/user/updateUserInfo' ,//更新用户
+
+    findAllGames:'/gameManage/games/findAllGames' , //获取所有彩票
+    addNewGame:"/gameManage/games/addNewGame",     //增加彩种
+    findByGameName:'/gameManage/games/findByGameName' //获取指定彩票
 }
 
 Vue.prototype.$apis = apis

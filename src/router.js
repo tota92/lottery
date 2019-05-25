@@ -18,13 +18,11 @@ export default new Router({
           path: 'RoleManage',
           name: 'RoleManage',
           component: () => import( /* webpackChunkName: "roleManage" */ '@/components/RoleManage/rolemanage'),
-          children:[
-            {
-              path:'addRole',
-              name:'addRole',
-              component: () => import( /* webpackChunkName: "addRole" */ '@/components/RoleManage/addRole')
-            }
-          ]
+          children: [{
+            path: 'addRole',
+            name: 'addRole',
+            component: () => import( /* webpackChunkName: "addRole" */ '@/components/RoleManage/addRole')
+          }]
         },
         //用户管理
         {
@@ -51,6 +49,13 @@ export default new Router({
           name: 'LotteryList',
           component: () => import( /* webpackChunkName: "lotteryList" */ '@/components/LotteryList/lotterylist')
         },
+        //显示彩票
+        {
+          path: '/lotteryView',
+          name: 'lotteryView',
+          component: () => import( /* webpackChunkName: "lotteryView" */ '@/components/lotteryView/lotteryView')
+        },
+
       ]
     },
     {
@@ -58,6 +63,5 @@ export default new Router({
       name: 'login',
       component: () => import( /* webpackChunkName: "login" */ '@/components/Login/login')
     },
-
   ]
 })
