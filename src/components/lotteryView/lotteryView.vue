@@ -1,5 +1,8 @@
 <template>
   <div id="lotteryView">
+    <el-button  icon="el-icon-close" circle size='mini' id ='back'
+      @click="pushView({name:'LotteryList'})"
+    ></el-button>
     <div id="h2">双 色 球 走 势 图</div>
     <table ref="table">
       <tr>
@@ -27,8 +30,9 @@
           :class="['blueBar',ite2<=0?'blue':'']"
         >{{ite2<=0?inde2+1:ite2 | addZero}}</td>
       </tr>
+      <canvas id="canvas" ref="canvas"></canvas>
     </table>
-    <canvas id='canvas' ref="canvas"></canvas>
+    
     <div class="block">
       <el-pagination
         @current-change="handleCurrentChange"
@@ -69,22 +73,33 @@ export default {
     handleCurrentChange(num) {
       getSize(num, 17, this);
     },
-
-    drawLine(){
-      var canvas = this.$refs.canvas;
-      var table = this.$refs.table;
+    drawLine() {
+      var canvas = this.$refs["canvas"];
+      var table = this.$refs["table"];
       canvas.width = table.clientWidth;
       canvas.height = table.clientHeight;
-      canvas.style.cssText = "position:absoulte;top:0;"
-          
-      
-      
-      
+      canvas.style.cssText = `
+      position:absolute;
+      `;
+      canvas.style.top =  "0px";
+      canvas.style.left = "0px";
+      // canvas.style.top = table.offsetTop + "px";
+      // canvas.style.left = table.offsetLeft + "px";
+      var ctx = canvas.getContext("2d");
+      var blue = document.getElementsByClassName('blue')
+        for (var i = 0; i < blue.length; i++) {
+          var x = blue[i].offsetLeft + 15;
+          var y = blue[i].offsetTop + 11;
+          if (i == 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+          ctx.strokeStyle = "#2681f0";
+          ctx.lineWith = 1;
+          ctx.stroke();
+      }
     }
-
-
-
-
   },
   filters: {
     addZero(value) {
@@ -95,13 +110,15 @@ export default {
       return num;
     }
   },
-  mounted() {
-    console.log(this.$refs);
+  created() {
     getSize(1, 17, this);
   },
-  updated() {
-   this.drawLine()
+  mounted() {
+    // this.drawLine();
   },
+  updated() {
+    this.drawLine();
+  }
 };
 </script>
 
@@ -114,13 +131,13 @@ export default {
   box-sizing: border-box;
 }
 table {
+  position: relative;
   width: 100%;
   background: rgb(253, 252, 249);
 }
 
 th,
 td {
-  
   line-height: 20px;
   text-align: center;
   border: 1px solid rgb(233, 233, 233);
@@ -164,7 +181,10 @@ td {
 .redBar {
   color: lightpink;
 }
-#canvas{
-  background: rgba(253, 253, 94, 0.4)
+#back {
+  position: absolute;
+  top:55px;
+  right:15px;
 }
 </style>
+      

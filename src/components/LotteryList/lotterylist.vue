@@ -14,11 +14,11 @@
       </li>
     </ul>
     <el-dialog title="新增彩票" :visible.sync="dialogFormVisible" width="40%" :before-close="cancel">
-      <el-form label-width="100px" :model="form">
-        <el-form-item label="彩票中文名称">
+      <el-form label-width="100px" :model="form" :rules="rules" ref="form" status-icon>
+        <el-form-item label="彩票中文名称" prop="cn">
           <el-input v-model="form.cn"></el-input>
         </el-form-item>
-        <el-form-item label="彩票英文名称">
+        <el-form-item label="彩票英文名称" prop="en">
           <el-input v-model="form.en"></el-input>
         </el-form-item>
         <el-form-item label="icons 1x" width="100px">
@@ -26,8 +26,8 @@
             ref="upload"
             class="avatar-uploader"
             list-type="picture"
-            :file-list="fileList"
             action="#"
+            :file-list="fileList"
             :on-change="hand"
             :auto-upload="false"
             :show-file-list="false"
@@ -38,13 +38,12 @@
         </el-form-item>
         <el-form-item label="icons 2x" width="200px">
           <el-upload
-            ref="upload"
+            ref="upload2"
             class="avatar-uploader"
             style="width:80px;height:80px;"
             action="#"
-            :limit="2"
+            :file-list="fileList"
             list-type="picture"
-            :file-list="fileList2"
             :on-change="hand2"
             :auto-upload="false"
             :show-file-list="false"
@@ -71,44 +70,6 @@
 import { mapGetters, mapActions } from "vuex";
 import axios from "axios";
 
-//将图片转换成base64
-function getBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function() {
-      // 图片转base64完成后返回reader对象
-      resolve(reader);
-    };
-    reader.onerror = reject;
-  });
-}
-
-//获取图片的宽高
-function getWh(file) {
-  return new Promise((resolve, reject) => {
-    var image = new Image();
-    image.src = file.url;
-    console.log(image);
-    image.onload = function() {
-      var width = this.width;
-      var height = this.height;
-      resolve({
-        width,
-        height
-      });
-    };
-  });
-}
-
-//判断上传图片是否符合要求
-var beforeAvatarUpload = file => {
-  const isJPG = file.type === "image/jpeg";
-  if (!isJPG) {
-    // this.$message.error("上传彩票图片只能是 JPG 格式!");
-    return false;
-  }
-};
 
 export default {
   data() {
@@ -121,7 +82,12 @@ export default {
       imageUrl: "",
       imageUrl2: "",
       fileList: [],
-      fileList2: []
+      file1:{},
+      file2:{},
+      rules: {
+        en: [{ required: true, message: "内容不能为空", trigger: "blur" }],
+        cn: [{ required: true, message: "内容不能为空", trigger: "blur" }]
+      }
     };
   },
   computed: {
@@ -132,50 +98,92 @@ export default {
   },
   methods: {
     update() {
-      var fd = new FormData();
-      fd.append("file", this.fileList[0].raw);
-      fd.append("file", this.fileList2[0].raw);
-      fd.append("en", this.form.en);
-      fd.append("cn", this.form.cn);
-      let config = {
-        headers: { "Content-Type": "multipart/form-data" }
-      };
-      axios
-        .post(this.$apis.addNewGame, fd, config)
-        .then(resp => {
-          this.$message({
-            type: resp.data.success ? "success" : "danger",
-            message: resp.data.message
-          });
-          if (resp.data.success) {
-            this.$store.dispatch("allGames");
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+          var fd = new FormData();
+          fd.append("file", this.file1);
+          fd.append("file", this.file2);
+          fd.append("en", this.form.en);
+          fd.append("cn", this.form.cn);
+          let config = {
+            headers: { "Content-Type": "multipart/form-data" }
+          };
+          axios
+            .post(this.$apis.addNewGame, fd, config)
+            .then(resp => {
+              this.action();
+              this.$message({
+                type: resp.data.success ? "success" : "danger",
+                message: resp.data.message
+              });
+              if (resp.data.success) {
+                this.$store.dispatch("allGames");
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        }
+      });
+    },
+    action() {
+      this.dialogFormVisible = false;
+      (this.form.cn = ""),
+        (this.form.en = ""),
+        (this.imageUrl = ""),
+        (this.imageUrl2 = ""),
+        (this.fileList = []),
+        (this.file1 = {}),
+        (this.file2 = {}),
+        this.$refs["form"].resetFields();
     },
     cancel() {
-      var action = () => {
-        this.dialogFormVisible = false;
-        this.$refs["form"].resetFields();
-      };
-      this.operateConfirm("退出", action);
+      this.operateConfirm("退出", this.action);
+    },
+
+    Avatar(file, w) {
+      return new Promise((resolve, reject) => {
+        const isJPG = file.raw.type === "image/jpeg";
+        var image = new Image();
+        image.src = file.url;
+        var _this = this;
+        image.onload = function() {
+          var width = this.width;
+          var height = this.height;
+          if (!isJPG) {
+            _this.$message.error("上传彩票图片只能是 JPG 格式!");
+            resolve(true);
+          } else if (width !== w && height !== w) {
+            _this.$message.error("上传彩票图片不是" + w + "×" + w);
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        };
+      });
     },
 
     hand(file, fileList) {
-      this.fileList = fileList.slice(-1);
-      this.imageUrl = file.url;
+      this.Avatar(file, 40).then(resp => {
+        if (!resp) {
+          this.imageUrl = file.url;
+           this.file1 = file.raw
+        }
+      });
     },
 
     hand2(file, fileList) {
-      this.fileList2 = fileList.slice(-1);
-      this.imageUrl2 = file.url;
+       this.Avatar(file, 90).then(resp => {
+        if (!resp) {
+          this.imageUrl2 = file.url;
+          this.file2 = file.raw
+        }
+      });
     },
 
-    lotteryView(item){
-      localStorage.setItem("lottery",item.en)
-     this.pushView({name:'lotteryView'})
+    lotteryView(item) {
+      localStorage.setItem("lottery", item.en);
+      this.pushView({ name: "lotteryView" });
     }
   }
 };

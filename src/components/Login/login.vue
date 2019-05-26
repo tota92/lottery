@@ -1,6 +1,6 @@
 <template>
   <div id="login">
-    <img src="./1.jpg" id="bg">
+    <img src="./Hippopx (2).jpg" id="bg">
     <div id="denglu">
       <span style="font-size:50px;color:#979695;text-align:center">可米彩票</span>
       <el-form :model="userInfo" :rules="rules" status-icon ref="userInfo">
