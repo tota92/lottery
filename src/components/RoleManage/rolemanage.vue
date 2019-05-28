@@ -65,6 +65,7 @@
         @check-change="handleCheckChange2"
       ></el-tree>
     </el-dialog>
+    
   </div>
 </template>
 
@@ -109,17 +110,15 @@ export default {
       // var p = [...this.allPrentRole]
       // var c = [...this.arr]
       // var a = c.filter(item=>!new Set(p).has(item))
-
       // this.$refs.tree.setCheckedKeys([...a])
       this.$refs.tree.setCheckedKeys([...this.arr]);
     },
     //编辑用户的权限
     handleEdit(index, row) {
-      console.log(row);
-      this.arr = row.permissions;
       this.dialogFormVisible2 = true;
       this.updateRole.Name = row.roleName;
       this.updateRole.id = row._id;
+      this.arr =  row.permissions
     },
 
     //删除用户
@@ -192,7 +191,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.allrole);
     this.$store.dispatch("rolelist");
     this.$store.dispatch("allrole");
   }

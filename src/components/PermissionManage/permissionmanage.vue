@@ -91,7 +91,6 @@ export default {
   methods: {
     handleChange(val) {},
     addPrmssion() {
-      console.log(this.form);
       this.$refs["form"].validate(vali => {
         if (vali) {
           this.post(this.$apis.addNewPersmission, this.form).then(() => {
@@ -103,7 +102,6 @@ export default {
       });
     },
     cancel() {
-     console.log(66)
       var action = () => {
         this.dialogTableVisible = false;
         this.$refs["form"].resetFields();

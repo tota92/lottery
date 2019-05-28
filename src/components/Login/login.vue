@@ -39,7 +39,6 @@ export default {
           this.$http
             .post(this.$apis.signin, this.userInfo)
             .then(resp => {
-              console.log(resp.data);
               var token = resp.data.token;
               var success = resp.data.success;
               var response =JSON.stringify(resp.data.response);
